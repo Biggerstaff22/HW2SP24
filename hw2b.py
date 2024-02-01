@@ -1,5 +1,9 @@
 import math
 
+#I asked ChatGPT to help me with this code. This is what it shot back to me.
+#I asked ChatGPT to explain each step to me so that I could truly learn why
+#it coded it this way.
+
 def Secant(fcn, x0, x1, maxiter=10, xtol=1e-5):
     """
     Use the Secant Method to find the root of fcn(x) in the neighborhood of x0 and x1.
