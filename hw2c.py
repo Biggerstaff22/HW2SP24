@@ -1,4 +1,48 @@
-from copy import deepcopy
+import copy
+
+def is_diagonal_dominant(matrix):
+    """
+    Check if a matrix is diagonal dominant.
+
+    Parameters:
+    - matrix: A 2D square matrix.
+
+    Returns:
+    - True if the matrix is diagonal dominant, False otherwise.
+    """
+    rows, cols = len(matrix), len(matrix[0])
+
+    for i in range(rows):
+        diagonal_element = abs(matrix[i][i])
+        sum_of_other_elements = sum(abs(matrix[i][j]) for j in range(cols) if j != i)
+
+        if diagonal_element <= sum_of_other_elements:
+            return False
+
+    return True
+
+def make_diagonally_dominant(matrix):
+    """
+    Make a matrix diagonally dominant.
+
+    Parameters:
+    - matrix: A 2D square matrix.
+
+    Returns:
+    - Diagonally dominant matrix.
+    """
+    A = copy.deepcopy(matrix)
+    rows, cols = len(matrix), len(matrix[0])
+
+    for i in range(rows):
+        diagonal_element = abs(matrix[i][i])
+        sum_of_other_elements = sum(abs(matrix[i][j]) for j in range(cols) if j != i)
+
+        if diagonal_element <= sum_of_other_elements:
+            # Adjust diagonal element to make it larger than the sum of other elements
+            matrix[i][i] = sum_of_other_elements + 1
+
+    return matrix
 
 def GaussSeidel(Aaug, x, Niter=15):
     """
@@ -25,24 +69,6 @@ def GaussSeidel(Aaug, x, Niter=15):
 
     return x
 
-def MakeDiagDom(A):
-    """
-    This function reorders the rows of matrix A to put the largest absolute values along the diagonal.
-
-    :param A: The matrix to sort
-    :return: The sorted matrix
-    """
-    # Create a list of tuples containing row index and maximum absolute value in each row
-    max_values = [(i, max(map(abs, row))) for i, row in enumerate(A)]
-
-    # Sort the list of tuples based on the maximum absolute value
-    max_values.sort(key=lambda x: x[1], reverse=True)
-
-    # Create a new matrix with rows rearranged based on the sorted indices
-    sorted_A = [A[i] for i, _ in max_values]
-
-    return sorted_A
-
 def main():
     # Test case
     Aaug = [[3, 1, -1, 2],
@@ -56,13 +82,38 @@ def main():
         print(row)
 
     print("\nDiagonally Dominant Matrix:")
-    Aaug = MakeDiagDom(Aaug)
+    Aaug = make_diagonally_dominant(Aaug)
     for row in Aaug:
         print(row)
 
-    solution = GaussSeidel(Aaug, initial_guess, Niter=15)
+    solution1 = GaussSeidel(Aaug, initial_guess, Niter=15)
 
-    print(f"\nEstimated Solution: {solution}")
+    print(f"\nEstimated Solution: {solution1}")
+
+def main2():
+    # Test case
+    Aaug2 = [[1, -10, 2, 4, 2],
+            [3, 1, 4, 12, 12],
+            [9, 2, 3, 4, 21],
+            [-1, 2, 7, 3, 37]]
+
+    initial_guess2 = [0, 0, 0, 0]
+
+    print("Original Matrix:")
+    for row in Aaug2:
+        print(row)
+
+    print("\nDiagonally Dominant Matrix:")
+    Aaug2 = make_diagonally_dominant(Aaug2)
+    for row in Aaug2:
+        print(row)
+
+    solution2 = GaussSeidel(Aaug2, initial_guess2, Niter=15)
+
+    print(f"\nEstimated Solution: {solution2}")
 
 if __name__ == "__main__":
     main()
+
+if __name__ == "__main__":
+    main2()
