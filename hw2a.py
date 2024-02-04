@@ -1,5 +1,9 @@
 import math
 
+#I asked ChatGPT to help me with this code. This is what it shot back to me.
+#I asked ChatGPT to explain each step to me so that I could truly learn why,
+#it coded it this way.
+
 def Probability(PDF, args, c, GT=True):
     """
     Calculate the probability using Simpson's 1/3 rule.
