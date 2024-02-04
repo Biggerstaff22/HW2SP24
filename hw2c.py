@@ -1,119 +1,77 @@
-import copy
+from copy import deepcopy
 
-def is_diagonal_dominant(matrix):
-    """
-    Check if a matrix is diagonal dominant.
-
-    Parameters:
-    - matrix: A 2D square matrix.
-
-    Returns:
-    - True if the matrix is diagonal dominant, False otherwise.
-    """
-    rows, cols = len(matrix), len(matrix[0])
-
-    for i in range(rows):
-        diagonal_element = abs(matrix[i][i])
-        sum_of_other_elements = sum(abs(matrix[i][j]) for j in range(cols) if j != i)
-
-        if diagonal_element <= sum_of_other_elements:
-            return False
-
-    return True
-
-def make_diagonally_dominant(matrix):
-    """
-    Make a matrix diagonally dominant.
-
-    Parameters:
-    - matrix: A 2D square matrix.
-
-    Returns:
-    - Diagonally dominant matrix.
-    """
-    A = copy.deepcopy(matrix)
-    rows, cols = len(matrix), len(matrix[0])
-
-    for i in range(rows):
-        diagonal_element = abs(matrix[i][i])
-        sum_of_other_elements = sum(abs(matrix[i][j]) for j in range(cols) if j != i)
-
-        if diagonal_element <= sum_of_other_elements:
-            # Adjust diagonal element to make it larger than the sum of other elements
-            matrix[i][i] = sum_of_other_elements + 1
-
-    return matrix
+#I used ChatGPT to help me write this code. This was a hard code to figure out how to explain,
+#to ChatGPT. I asked ChatGPT to explain the steps to me.
 
 def GaussSeidel(Aaug, x, Niter=15):
     """
-    Use the Gauss-Seidel method to estimate the solution to a set of N linear equations.
-
-    Parameters:
-    - Aaug: Augmented matrix containing [A | b].
-    - x: Vector containing the values of the initial guess.
-    - Niter: The number of iterations (new x vectors) to compute.
-
-    Returns:
-    - The final new x vector.
+    Implements the Gauss-Seidel method for solving a system of equations.
+    :param Aaug: Augmented Matrix from Ax=b to [A|b]
+    :param x: Initial guess for the x vector. x is nx1 if A is nxn.
+    :param Niter:Number of iterations needed to run the Gauss-Seidel method.
+    :return:
     """
-    rows, cols = len(Aaug), len(Aaug[0]) - 1
+    n = len(x)
 
-    if not is_diagonal_dominant(Aaug):
-        print("Matrix is not diagonal dominant. Adjusting...")
-        Aaug = make_diagonally_dominant(Aaug)
+    for k in range(Niter):
+        x_old = deepcopy(x)
 
-    for _ in range(Niter):
-        for i in range(rows):
-            sum_ax = sum(Aaug[i][j] * x[j] for j in range(cols) if j != i)
-            x[i] = (Aaug[i][cols] - sum_ax) / Aaug[i][i]
+        for i in range(n):
+            sigma = sum(Aaug[i][j] * x[j] for j in range(n) if j != i)
+            x[i] = (Aaug[i][-1] - sigma) / Aaug[i][i]
 
-    return x
+        return x
+def MakeDiagDominant(Aaug):
+    """
+    This is used to swap rows to make matrix diagonally dominant
+    :param Aaug: Matrix that is being modified
+    :return:
+    """
+    n = len(Aaug)
+
+    for i in range(n):
+        max_row = max(range(i, n), key=lambda j: abs(Aaug[j][i]))
+        Aaug[i], Aaug[max_row] = Aaug[max_row], Aaug[i]
+
+    return Aaug
 
 def main():
-    # Test case
-    Aaug = [[3, 1, -1, 2],
-            [1, 4, 1, 12],
-            [2, 1, 2, 10]]
+    """
+    :return: This is the main function that will perform all the math to execute the code and get the answer.
+    """
+    #this is for the 4x4 matrix A:
+    A = [[1, -10, 2, 4],
+         [3, 1, 4, 12],
+         [9, 2, 3, 4],
+         [-1, 2, 7, 3]]
+    #now for the 1x4 matrix b:
+    b = [2, 12, 21, 37]
+    #now for the 3x3 matrix C:
+    C = [[3, 1, -1],
+         [1, 4, 1],
+         [2, 1, 2]]
+    #now for the 1x3 matrix d:
+    d = [2, 12, 10]
+    #This creates the augmented matrices
+    Aaug = [row + [bi] for row, bi in zip(A, b)]
+    Caug = [row + [dj] for row, dj in zip(C, d)]
+    #this creates the initial guess for the matrix
+    x_initial_guessA = [0.0] * len(b)
+    x_initial_guessC = [0.0] * len(d)
+    #makes the matrix diagonally dominant
+    Aaug = MakeDiagDominant(Aaug)
+    Caug = MakeDiagDominant(Caug)
+    #now to solve using Gauss-Seidel
+    answer = GaussSeidel(Aaug, x_initial_guessA)
+    answer2 = GaussSeidel(Caug, x_initial_guessC)
+    #Printing the output so that we can see the answer
+    for i in range(len(answer2)):
+        answer2[i] = round(answer2[i])
+    for j in range(len(answer)):
+        answer[j] = round(answer[j])
 
-    initial_guess = [0, 0, 0]
-
-    print("Original Matrix:")
-    for row in Aaug:
-        print(row)
-
-    print("\nDiagonally Dominant Matrix:")
-    Aaug = make_diagonally_dominant(Aaug)
-    for row in Aaug:
-        print(row)
-
-    solution1 = GaussSeidel(Aaug, initial_guess, Niter=15)
-
-    print(f"\nEstimated Solution: {solution1}")
-
-def main2():
-    # Test case
-    Aaug2 = [[1, -10, 2, 4, 2],
-            [3, 1, 4, 12, 12],
-            [9, 2, 3, 4, 21],
-            [-1, 2, 7, 3, 37]]
-
-    initial_guess2 = [0, 0, 0, 0]
-
-    print("Original Matrix:")
-    for row in Aaug2:
-        print(row)
-
-    print("\nDiagonally Dominant Matrix:")
-    Aaug2 = make_diagonally_dominant(Aaug2)
-    for row in Aaug2:
-        print(row)
-
-    solution2 = GaussSeidel(Aaug2, initial_guess2, Niter=15)
-
-    print(f"\nEstimated Solution: {solution2}")
+    print("Solution to 3x3 matrix is: ", answer2)
+    print("Solution to 4x4 matrix is: ", answer)
 
 if __name__ == "__main__":
     main()
-
-if __name__ == "__main__":
-    main2()
