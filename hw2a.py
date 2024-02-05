@@ -60,8 +60,8 @@ def normal_pdf(values):
 
 def main():
     # Find and print the probabilities
-    prob_1 = Probability(normal_pdf, (100, 12.5), 105, GT=False)
-    prob_2 = Probability(normal_pdf, (100, 3), 100 + 2 * 3, GT=True)
+    prob_1 = Probability(normal_pdf, (100, 12.5), 105, GT=True)
+    prob_2 = Probability(normal_pdf, (100, 3), 100 + 2 * 3, GT=False)
 
     print(f"P(x<105|N(100,12.5))={prob_1:.2f}")
     print(f"P(x>{100 + 2 * 3}|N(100,3))={prob_2:.2f}")
